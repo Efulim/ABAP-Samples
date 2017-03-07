@@ -1,0 +1,92 @@
+class ZCL_BUPA definition
+  public
+  create public .
+
+public section.
+
+  types:
+    BEGIN OF gty_bupa_buag,
+        partner     TYPE bu_partner,
+        buag_guid   TYPE crmt_buag_guid,
+        bupa_guid   TYPE bu_partner_guid,
+        buag_id     TYPE crmt_buag_id,
+        buag_text   TYPE crmt_buag_text,
+        buag_text35 TYPE crmt_buag_text35,
+      END OF gty_bupa_buag .
+  types:
+    gtty_bupa_buag TYPE TABLE OF gty_bupa_buag .
+
+  class-data GV_USERS_PARTNER type BU_PARTNER .
+  data GV_PARTNER type BU_PARTNER .
+  data GV_PARTNER_GUID type BU_PARTNER_GUID .
+  data GV_COMMIT_PER_ACTION type ABAP_BOOL .
+
+  methods CONSTRUCTOR
+    importing
+      !IV_PARTNER type BU_PARTNER
+      !IV_PARTNER_GUID type BU_PARTNER_GUID
+      !IV_COMMIT_PER_ACTION type ABAP_BOOL .
+  class-methods CLASS_CONSTRUCTOR .
+  class-methods CREATE_PARTNER_FROM_DATA
+    importing
+      !IV_CATEGORY type BAPIBUS1006_HEAD-PARTN_CAT
+      !IV_GROUP type BAPIBUS1006_HEAD-PARTN_GRP
+      !IS_DATA type BAPIBUS1006_CENTRAL optional
+      !IS_PERSON type BAPIBUS1006_CENTRAL_PERSON optional
+      !IS_ORGANISATION type BAPIBUS1006_CENTRAL_ORGAN optional
+      !IS_ADDRESS type BAPIBUS1006_ADDRESS optional
+      !IV_ACCEPT_ERROR type BAPI4001_1-ACCEPT_ERR default 'X'
+      !IV_X_SAVE type BAPI4001_1-SAVE_ADDR default 'X'
+      !IV_CHECK_ADDRESS type SZAD_FIELD-FLAG default ' '
+      !IV_COMMIT type ABAP_BOOL default 'X'
+      !IV_COMMIT_PER_ACTION type ABAP_BOOL default 'X'
+    exporting
+      !EV_PARTNER type BU_PARTNER
+      !EV_PARTNER_GUID type BU_PARTNER_GUID
+      !EV_ADDRNUMBER type AD_ADDRNUM
+      !EV_ADDR_GUID type BU_ADDRESS_GUID
+      !ET_RETURN type BAPIRET2_T
+      !ER_PARTNER_REF type ref to ZCL_BUPA
+    exceptions
+      REFERENCE_NOT_CREATED
+      PARTNER_CAN_NOT_CREATED
+      NOT_ENOUGH_DATA .
+  methods ADD_IDENTIFICATION
+    importing
+      !IV_ID_CATEGORY type BU_ID_CATEGORY
+      !IV_ID_NUMBER type BU_ID_NUMBER
+      !IS_IDENTIFICATION type BAPIBUS1006_IDENTIFICATION
+      !IV_CHECK type ABAP_BOOL default 'X'
+      !IV_COMMIT type ABAP_BOOL optional
+    exporting
+      !EV_SUBRC type SY-SUBRC
+      !ET_RETURN type BAPIRET2_T .
+  methods ADD_TAX
+    importing
+      !IV_TAX_TYPE type BUS_TAX-TAX_TYPE
+      !IV_TAX_NUMBER type BUS_TAX-TAX_NUMBER
+      !IV_TAX_NUMBER_XL type BPTAXNUMXL
+      !IV_COMBINED_CHECK type BU_BOOLEAN default ' '
+      !IV_X_SAVE type BOOLE-BOOLE default 'X'
+      !IV_COMMIT type ABAP_BOOL optional
+    exporting
+      !EV_SUBRC type SY-SUBRC
+      !ET_RETURN type BAPIRET2_T .
+  methods GET_IDENTIFICATION
+    importing
+      !IV_PARTNER type BU_PARTNER
+      !IV_PARTNER_GUID type BU_PARTNER_GUID
+    exporting
+      !ET_IDENTIFICATIONDETAIL type BAPIBUS1006_ID_DETAILS_T
+      !ET_RETURN type BAPIRET2_T .
+  methods GET_TAX
+    importing
+      !IV_TAX_TYPE type BUS_TAX-TAX_TYPE
+    exporting
+      !EV_TAX_NUMBER type BUS_TAX-TAX_NUMBER
+      !ET_RETURN type BAPIRET2_T .
+  methods GET_BUAGS
+    exporting
+      !EV_SUBRC type SY-SUBRC
+      !ET_RETURN type BAPIRET2_T
+      !ET_BUAG type GTTY_BUPA_BUAG .

@@ -1,0 +1,7 @@
+  METHOD constructor.
+
+    gv_partner           = iv_partner.
+    gv_partner_guid      = iv_partner_guid.
+    gv_commit_per_action = iv_commit_per_action.
+
+  ENDMETHOD.

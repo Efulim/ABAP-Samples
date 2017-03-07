@@ -1,0 +1,11 @@
+  METHOD GET_IDENTIFICATION.
+
+    CALL FUNCTION 'BUPA_IDENTIFICATIONDETAILS_GET'
+      EXPORTING
+        iv_partner              = gv_partner
+        iv_partner_guid         = gv_partner_guid
+      TABLES
+        et_identificationdetail = et_identificationdetail
+        et_return               = et_return.
+
+  ENDMETHOD.

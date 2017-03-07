@@ -1,0 +1,11 @@
+  METHOD CLASS_CONSTRUCTOR.
+
+    IF gv_users_partner IS INITIAL.
+      CALL FUNCTION 'CRM_ERMS_FIND_BP_FOR_USER'
+        EXPORTING
+          iv_user_id = sy-uname
+        IMPORTING
+          ev_bupa_no = gv_users_partner.
+    ENDIF.
+
+  ENDMETHOD.

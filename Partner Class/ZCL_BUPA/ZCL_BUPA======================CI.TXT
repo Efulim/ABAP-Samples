@@ -1,0 +1,20 @@
+private section.
+
+  class-methods _ET_RETURN
+    importing
+      !TYPE type BAPI_MTYPE optional
+      !ID type SYMSGID optional
+      !NUMBER type SYMSGNO optional
+      !MESSAGE type BAPI_MSG optional
+      !LOG_NO type BALOGNR optional
+      !LOG_MSG_NO type BALMNR optional
+      !MESSAGE_V1 type SYMSGV optional
+      !MESSAGE_V2 type SYMSGV optional
+      !MESSAGE_V3 type SYMSGV optional
+      !MESSAGE_V4 type SYMSGV optional
+      !PARAMETER type BAPI_PARAM optional
+      !ROW type BAPI_LINE optional
+      !FIELD type BAPI_FLD optional
+      !SYSTEM type BAPILOGSYS optional
+    changing
+      !CT_RETURN type BAPIRET2_T .

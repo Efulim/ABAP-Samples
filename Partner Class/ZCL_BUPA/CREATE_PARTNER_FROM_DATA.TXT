@@ -1,0 +1,48 @@
+  METHOD create_partner_from_data.
+    IF is_person       IS INITIAL AND
+       is_organisation IS INITIAL.
+      RAISE not_enough_data.
+    ENDIF.
+
+    CALL FUNCTION 'BUPA_CREATE_FROM_DATA'
+      EXPORTING
+        iv_category      = iv_category
+        iv_group         = iv_group
+        is_data          = is_data
+        is_data_person   = is_person
+        is_data_organ    = is_organisation
+        is_address       = is_address
+        iv_accept_error  = iv_accept_error
+        iv_x_save        = iv_x_save
+        iv_check_address = iv_check_address
+      IMPORTING
+        ev_partner       = ev_partner
+        ev_partner_guid  = ev_partner_guid
+        ev_addrnumber    = ev_addrnumber
+        ev_addrguid      = ev_addr_guid
+      TABLES
+        et_return        = et_return.
+
+    IF ev_partner_guid IS NOT INITIAL.
+      IF iv_commit EQ abap_true.
+        CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'
+          EXPORTING
+            wait = 'X'.
+      ENDIF.
+      IF er_partner_ref IS REQUESTED.
+        TRY .
+            CREATE OBJECT er_partner_ref
+              EXPORTING
+                iv_partner           = ev_partner
+                iv_partner_guid      = ev_partner_guid
+                iv_commit_per_action = iv_commit_per_action.
+          CATCH cx_root.
+            RAISE reference_not_created.
+        ENDTRY.
+      ENDIF.
+    ELSE.
+      CALL FUNCTION 'BAPI_TRANSACTION_ROLLBACK'.
+      RAISE partner_can_not_created.
+    ENDIF.
+
+  ENDMETHOD.

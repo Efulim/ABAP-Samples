@@ -1,0 +1,53 @@
+  METHOD add_identification.
+
+    DATA: ls_return TYPE bapiret2,
+          lv_commit TYPE abap_bool.
+
+    IF iv_check EQ abap_true.
+      SELECT MAX( id~partner )
+        FROM but0id AS id
+       INNER JOIN but000 AS b
+          ON id~partner EQ b~partner
+        INTO @DATA(m)
+       WHERE id~type        EQ @iv_id_category
+         AND b~partner_guid EQ @gv_partner_guid.
+      IF sy-subrc <> 0.
+        ev_subrc = 4.
+        _et_return(
+          EXPORTING
+            type    = 'E'
+            message = |There's already record for { iv_id_category }|
+          CHANGING
+            ct_return = et_return ).
+        RETURN.
+      ENDIF.
+    ENDIF.
+
+    IF iv_commit IS SUPPLIED.
+      lv_commit = iv_commit.
+    ELSE.
+      lv_commit = gv_commit_per_action.
+    ENDIF.
+
+    CALL FUNCTION 'BUPA_IDENTIFICATION_ADD'
+      EXPORTING
+        gv_partner_guid           = gv_partner_guid
+        iv_identificationcategory = iv_id_category
+        iv_identificationnumber   = iv_id_number
+        is_identification         = is_identification
+      TABLES
+        et_return                 = et_return[].
+    LOOP AT et_return ASSIGNING FIELD-SYMBOL(<fs>) WHERE type CA 'AEX'. ENDLOOP.
+    IF sy-subrc <> 0.
+      ev_subrc = 0.
+      IF lv_commit EQ abap_true.
+        CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'
+          EXPORTING
+            wait = 'X'.
+      ENDIF.
+    ELSE.
+      ev_subrc = 4.
+      CALL FUNCTION 'BAPI_TRANSACTION_ROLLBACK'.
+    ENDIF.
+
+  ENDMETHOD.

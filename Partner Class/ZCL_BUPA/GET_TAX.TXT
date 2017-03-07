@@ -1,0 +1,39 @@
+  METHOD get_tax.
+    DATA: lt_return     TYPE bapiret2_t,
+          lv_message_v2 TYPE symsgv.
+
+    IF iv_tax_type IS INITIAL.
+      _et_return(
+        EXPORTING
+          type    = 'E'
+          message = text-003
+          message_v1 = 'Tax Type'
+        CHANGING
+          ct_return = et_return ).
+    ENDIF.
+
+    CALL FUNCTION 'BUPA_TAX_GET_DETAIL'
+      EXPORTING
+        iv_partner      = gv_partner
+        iv_tax_type     = iv_tax_type
+      IMPORTING
+        ev_tax_number   = ev_tax_number
+      TABLES
+        ct_return       = lt_return
+      EXCEPTIONS
+        no_record_found = 1
+        OTHERS          = 2.
+    APPEND LINES OF lt_return TO et_return.
+    IF sy-subrc NE 0.
+      lv_message_v2 = gv_partner.
+      _et_return(
+        EXPORTING
+          type    = 'E'
+          message = 'No record found. (&1-&2)'
+          message_v1 = lv_message_v2
+          message_v2 = 'Tax Type'
+        CHANGING
+          ct_return = et_return ).
+    ENDIF.
+
+  ENDMETHOD.

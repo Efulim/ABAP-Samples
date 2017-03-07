@@ -1,0 +1,47 @@
+  METHOD GET_BUAGS.
+    DATA: ls_return       TYPE bapiret2,
+          lv_partner_guid TYPE bu_partner_guid.
+
+    IF gv_partner_guid IS INITIAL AND
+       gv_partner      IS NOT INITIAL.
+      SELECT SINGLE partner_guid
+        FROM but000
+        INTO lv_partner_guid
+       WHERE partner EQ gv_partner.
+      IF sy-subrc <> 0.
+        ev_subrc = 4.
+        _et_return(
+          EXPORTING
+            type    = 'E'
+            message = text-002
+          CHANGING
+            ct_return = et_return ).
+      ENDIF.
+    ELSE.
+      lv_partner_guid = gv_partner_guid.
+    ENDIF.
+
+    IF lv_partner_guid IS NOT INITIAL.
+      SELECT b~partner
+             f~buag_guid f~bupa_guid
+             ba~buag_id
+             ba~buag_text
+             ba~buag_text35
+        FROM but000 AS b
+       INNER JOIN crmm_buag_l_fica AS f
+          ON b~partner_guid EQ f~bupa_guid
+       INNER JOIN crmm_buag AS ba
+          ON f~buag_guid EQ ba~buag_guid
+        INTO TABLE et_buag
+       WHERE b~partner_guid EQ lv_partner_guid.
+    ELSE.
+      ev_subrc = 4.
+      _et_return(
+        EXPORTING
+          type    = 'E'
+          message = text-001
+        CHANGING
+          ct_return = et_return ).
+    ENDIF.
+
+  ENDMETHOD.

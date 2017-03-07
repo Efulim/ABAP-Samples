@@ -1,0 +1,29 @@
+  METHOD _et_return.
+
+    DATA: ls TYPE bapiret2.
+    ls-type         = type.
+    ls-id           = id.
+    ls-number       = number.
+    ls-message      = message.
+    ls-log_no       = log_no.
+    ls-log_msg_no   = log_msg_no.
+    ls-message_v1   = message_v1.
+    ls-message_v2   = message_v2.
+    ls-message_v3   = message_v3.
+    ls-message_v4   = message_v4.
+    ls-parameter    = parameter.
+    ls-row          = row.
+    ls-field        = field.
+    ls-system       = system.
+    IF message_v1 IS SUPPLIED OR
+       message_v2 IS SUPPLIED OR
+       message_v3 IS SUPPLIED OR
+       message_v4 IS SUPPLIED.
+      REPLACE '&1' WITH message_v1 INTO ls-message.
+      REPLACE '&2' WITH message_v2 INTO ls-message.
+      REPLACE '&3' WITH message_v3 INTO ls-message.
+      REPLACE '&4' WITH message_v4 INTO ls-message.
+    ENDIF.
+    APPEND ls TO ct_return.
+
+  ENDMETHOD.

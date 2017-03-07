@@ -1,0 +1,43 @@
+  METHOD add_tax.
+    DATA: lt_return TYPE bapiret2_t,
+          lv_commit TYPE abap_bool.
+
+    CALL FUNCTION 'BUPA_TAX_ADD'
+      EXPORTING
+        iv_partner            = gv_partner
+        iv_tax_type           = iv_tax_type
+        iv_tax_number         = iv_tax_number
+        iv_tax_number_xl      = iv_tax_number_xl
+        iv_combined_check     = iv_combined_check
+        iv_x_save             = iv_x_save
+      TABLES
+        ct_return             = lt_return
+      EXCEPTIONS
+        record_already_exists = 1
+        invalid_data          = 2
+        foreign_lock          = 3
+        OTHERS                = 4.
+    APPEND LINES OF lt_return TO et_return.
+
+    IF iv_commit IS SUPPLIED.
+      lv_commit = iv_commit.
+    ELSE.
+      lv_commit = gv_commit_per_action.
+    ENDIF.
+
+    IF iv_commit EQ abap_true.
+      LOOP AT lt_return ASSIGNING FIELD-SYMBOL(<fs>) WHERE type CA 'AEX'. ENDLOOP.
+      IF sy-subrc <> 0.
+        ev_subrc = 0.
+        IF iv_commit EQ abap_true.
+          CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'
+            EXPORTING
+              wait = 'X'.
+        ENDIF.
+      ELSE.
+        ev_subrc = 4.
+        CALL FUNCTION 'BAPI_TRANSACTION_ROLLBACK'.
+      ENDIF.
+    ENDIF.
+
+  ENDMETHOD.
