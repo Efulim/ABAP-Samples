@@ -7,3 +7,4 @@ Some sample ALV codes.
 3. Dynamic ALV
 4. XML vs JSON Performance Analysis
 5. Partner Class
+6. PPOMA Attribute Insert
